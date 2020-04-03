@@ -2,6 +2,7 @@
 
 
 #include "WorldPosition.h"
+#include "GameFramework/Actor.h"
 
 // Sets default values for this component's properties
 UWorldPosition::UWorldPosition()
@@ -9,6 +10,10 @@ UWorldPosition::UWorldPosition()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+
+	UE_LOG(LogTemp, Display, TEXT("Demo display log"));
+	UE_LOG(LogTemp, Warning, TEXT("Demo warning log"));
+	UE_LOG(LogTemp, Error, TEXT("Demo error log"));
 
 	// ...
 }
@@ -18,6 +23,11 @@ UWorldPosition::UWorldPosition()
 void UWorldPosition::BeginPlay()
 {
 	Super::BeginPlay();
+
+	FString actorName = GetOwner()->GetName();
+	UE_LOG(LogTemp, Warning, TEXT("Get actor name by pointer: %s"), *actorName);
+	FString objectPosition = GetOwner()->GetActorLocation().ToString();
+	UE_LOG(LogTemp, Warning, TEXT("%s is at position %s"), *actorName, *objectPosition);
 
 	// ...
 	
