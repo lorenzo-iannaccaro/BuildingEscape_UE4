@@ -59,14 +59,8 @@ void UOpenDoor::openDoor(float delta)
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *GetOwner()->GetActorTransform().ToString());
 
-	/* float currentYaw = GetOwner()->GetActorRotation().Yaw;
-	FRotator openDoor(0.f, 0.f, 0.f);	// initialization
-	// openDoor.Yaw = FMath::Lerp(currentYaw, targetYaw 0.02f);
-	openDoor.Yaw = FMath::FInterpTo(currentYaw, targetYaw, DeltaTime, 1.f);
-	GetOwner()->SetActorRotation(openDoor); */
-
 	// Relative rotation
-	currentYaw = FMath::FInterpTo(currentYaw, targetYaw, delta, 1.f);
+	currentYaw = FMath::FInterpTo(currentYaw, targetYaw, delta, doorOpeningSpeed);
 	FRotator doorRotator = GetOwner()->GetActorRotation();
 	doorRotator.Yaw = currentYaw;
 	GetOwner()->SetActorRotation(doorRotator);
@@ -77,7 +71,7 @@ void UOpenDoor::closeDoor(float delta)
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *GetOwner()->GetActorTransform().ToString());
 
 	// Relative rotation
-	currentYaw = FMath::FInterpTo(currentYaw, initialYaw, delta, 2.f);
+	currentYaw = FMath::FInterpTo(currentYaw, initialYaw, delta, doorClosingSpeed);
 	FRotator doorRotator = GetOwner()->GetActorRotation();
 	doorRotator.Yaw = currentYaw;
 	GetOwner()->SetActorRotation(doorRotator);

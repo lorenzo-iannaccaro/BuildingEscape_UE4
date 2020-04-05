@@ -34,6 +34,12 @@ private:
 	float doorClosingDelay = 2.f;
 
 	UPROPERTY(EditAnywhere)
+	float doorOpeningSpeed = 1.f;
+
+	UPROPERTY(EditAnywhere)
+	float doorClosingSpeed = 2.f;
+
+	UPROPERTY(EditAnywhere)
 	float targetYaw = -90.f;
 
 	UPROPERTY(EditAnywhere)
