@@ -34,7 +34,18 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	// if the physics handle has an object attached to it
+	if(physicsHandle->GrabbedComponent)
+	{
+		// get player viewpoint
+		FVector playerViewPointLocation;
+		FRotator playerViewPointRotation;
+		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT playerViewPointLocation, OUT playerViewPointRotation);
+		FVector lineTraceEnd = playerViewPointLocation + playerViewPointRotation.Vector() * reach;
 
+		// move the object
+		physicsHandle->SetTargetLocation(lineTraceEnd);
+	}
 }
 
 FHitResult UGrabber::getFirstPhysicsInRange() const
@@ -71,12 +82,33 @@ FHitResult UGrabber::getFirstPhysicsInRange() const
 void UGrabber::grab()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grab button pressed."));
-	getFirstPhysicsInRange();
+	FHitResult hitResult = getFirstPhysicsInRange();
+
+	// get player viewpoint
+	FVector playerViewPointLocation;
+	FRotator playerViewPointRotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT playerViewPointLocation, OUT playerViewPointRotation);
+	FVector lineTraceEnd = playerViewPointLocation + playerViewPointRotation.Vector() * reach;
+	
+	// if hit something with physics, grab it
+	if(hitResult.GetActor())
+	{
+		UPrimitiveComponent* componentToGrab = hitResult.GetComponent();
+		physicsHandle->GrabComponentAtLocation(componentToGrab, NAME_None, lineTraceEnd);
+	}
+
 }
 
 void UGrabber::release()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grab button released."));
+
+	// eventually release a grabbed object
+	if(physicsHandle->GetGrabbedComponent())
+	{
+		physicsHandle->ReleaseComponent();
+	}
+
 }
 
 void UGrabber::findPhysicsHandle()
