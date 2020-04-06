@@ -1,7 +1,7 @@
 // Copyright Lorenzo Iannaccaro 2020
 
-#include "Engine/World.h"
 #include "OpenDoor.h"
+#include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Actor.h"
 
@@ -20,6 +20,7 @@ UOpenDoor::UOpenDoor()
 void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *GetOwner()->GetActorTransform().ToString());
 
 	initialYaw = GetOwner()->GetActorRotation().Yaw;
 	currentYaw = initialYaw;
@@ -57,7 +58,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 void UOpenDoor::openDoor(float delta)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *GetOwner()->GetActorTransform().ToString());
+	// UE_LOG(LogTemp, Warning, TEXT("%s"), *GetOwner()->GetActorTransform().ToString());
 
 	// Relative rotation
 	currentYaw = FMath::FInterpTo(currentYaw, targetYaw, delta, doorOpeningSpeed);
@@ -68,7 +69,7 @@ void UOpenDoor::openDoor(float delta)
 
 void UOpenDoor::closeDoor(float delta)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *GetOwner()->GetActorTransform().ToString());
+	// UE_LOG(LogTemp, Warning, TEXT("%s"), *GetOwner()->GetActorTransform().ToString());
 
 	// Relative rotation
 	currentYaw = FMath::FInterpTo(currentYaw, initialYaw, delta, doorClosingSpeed);
