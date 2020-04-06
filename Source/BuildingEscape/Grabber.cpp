@@ -25,8 +25,6 @@ void UGrabber::BeginPlay()
 	
 	findPhysicsHandle();
 	setupInputController();
-
-	UE_LOG(LogTemp, Display, TEXT("Grabber initialized."));
 	
 }
 
@@ -36,18 +34,23 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+
+}
+
+FHitResult UGrabber::getFirstPhysicsInRange() const
+{
 	// get player viewpoint
 	FVector playerViewPointLocation;
 	FRotator playerViewPointRotation;
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT playerViewPointLocation, OUT playerViewPointRotation);
+	FVector lineTraceEnd = playerViewPointLocation + playerViewPointRotation.Vector() * reach;
 
 	// draw debug line
-	FVector lineTraceEnd = playerViewPointLocation + playerViewPointRotation.Vector() * reach;
-	DrawDebugLine(GetWorld(), playerViewPointLocation, lineTraceEnd, FColor(0,255,0), false, 0, 0, 5.f);
+	// DrawDebugLine(GetWorld(), playerViewPointLocation, lineTraceEnd, FColor(0,255,0), false, 0, 0, 5.f);
 
+	// linetrace to physics bodies in direct sight 
 	FHitResult hit;
 	FCollisionQueryParams traceParams(FName(TEXT("")), false, GetOwner());
-
 	GetWorld()->LineTraceSingleByObjectType(
 		OUT hit, 
 		playerViewPointLocation, 
@@ -56,15 +59,19 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		traceParams
 	);
 
-	if(hit.GetActor()){
-		UE_LOG(LogTemp, Warning, TEXT("Hit object whose name is: %s"), *hit.GetActor()->GetName());
+	// log if linetrace hit something
+	AActor* actorHit = hit.GetActor();
+	if(actorHit){
+		UE_LOG(LogTemp, Warning, TEXT("Hit object whose name is: %s"), *actorHit->GetName());
 	}
 
+	return hit;
 }
 
 void UGrabber::grab()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grab button pressed."));
+	getFirstPhysicsInRange();
 }
 
 void UGrabber::release()

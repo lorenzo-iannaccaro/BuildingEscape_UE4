@@ -32,5 +32,6 @@ private:
 	void release();
 	void findPhysicsHandle();
 	void setupInputController();
+	FHitResult getFirstPhysicsInRange() const;
 		
 };
