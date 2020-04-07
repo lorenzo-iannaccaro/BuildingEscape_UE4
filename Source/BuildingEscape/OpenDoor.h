@@ -26,18 +26,22 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	void openDoor(float delta);
 	void closeDoor(float delta);
+	float getTotalMassOverlapping() const;
 
 private:
 	float initialYaw;
 	float currentYaw;
 	float doorLastOpenedTime = 0.f;;
-	float doorClosingDelay = 2.f;
+	float doorClosingDelay = .3f;
+
+	UPROPERTY(EditAnywhere)
+	float massToOpenDoor = 2.5f;
 
 	UPROPERTY(EditAnywhere)
 	float doorOpeningSpeed = 1.f;
 
 	UPROPERTY(EditAnywhere)
-	float doorClosingSpeed = 2.f;
+	float doorClosingSpeed = 3.f;
 
 	UPROPERTY(EditAnywhere)
 	float targetYaw = -90.f;
