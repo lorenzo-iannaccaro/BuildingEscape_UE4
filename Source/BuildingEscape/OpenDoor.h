@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Components/AudioComponent.h"
 #include "Engine/TriggerVolume.h"
 #include "OpenDoor.generated.h"
 
@@ -27,8 +28,17 @@ public:
 	void openDoor(float delta);
 	void closeDoor(float delta);
 	float getTotalMassOverlapping() const;
+	void playAudio();
+	void checkAudioComponent() const;
+	void checkPressurePlate() const;
+	void controlPressurePlate(float delta);
 
 private:
+
+	// bools for controlling the audio play
+	bool doorClosed = true;
+	bool doorOpen = false;
+
 	float initialYaw;
 	float currentYaw;
 	float doorLastOpenedTime = 0.f;;
@@ -51,5 +61,8 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	AActor* actorThatOpens = nullptr;
+
+	UPROPERTY()
+	UAudioComponent* audioComponent = nullptr;
 		
 };

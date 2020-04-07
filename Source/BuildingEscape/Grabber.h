@@ -27,8 +27,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float reach = 250.f;
-
+	UPROPERTY()
 	UPhysicsHandleComponent* physicsHandle = nullptr;
+	UPROPERTY()
 	UInputComponent* inputComponent = nullptr;
 	FVector playerViewPointLocation;
 	FRotator playerViewPointRotation;

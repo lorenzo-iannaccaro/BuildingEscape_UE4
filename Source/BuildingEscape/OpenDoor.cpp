@@ -16,7 +16,6 @@ UOpenDoor::UOpenDoor()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
 }
 
 
@@ -26,14 +25,14 @@ void UOpenDoor::BeginPlay()
 	Super::BeginPlay();
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *GetOwner()->GetActorTransform().ToString());
 
+	audioComponent = GetOwner()->FindComponentByClass<UAudioComponent>();
+	checkAudioComponent();
+
+	checkPressurePlate();
+
 	initialYaw = GetOwner()->GetActorRotation().Yaw;
 	currentYaw = initialYaw;
 	targetYaw += initialYaw;
-
-	if(!pressurePlate)
-	{
-		UE_LOG(LogTemp, Error, TEXT("The actor %s has the OpenDoor component on it, but has no pressure plate set."), *GetOwner()->GetName());
-	}
 
 	actorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
 	
@@ -45,30 +44,18 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if(!pressurePlate)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Pressure plate not set."));
-		return;
-	}
-
-	if(pressurePlate->IsOverlappingActor(actorThatOpens) ||  getTotalMassOverlapping() > massToOpenDoor)
-	{
-		openDoor(DeltaTime);
-		doorLastOpenedTime = GetWorld()->GetTimeSeconds();
-	}else
-	{
-		float actualTime = GetWorld()->GetTimeSeconds();
-		if (actualTime - doorLastOpenedTime >= doorClosingDelay)
-		{
-			closeDoor(DeltaTime);
-		}
-	}
+	controlPressurePlate(DeltaTime);
 
 }
 
 void UOpenDoor::openDoor(float delta)
 {
-	// UE_LOG(LogTemp, Warning, TEXT("%s"), *GetOwner()->GetActorTransform().ToString());
+	if(doorClosed)
+	{
+		playAudio();
+		doorOpen = true;
+		doorClosed = false;
+	}
 
 	// Relative rotation
 	currentYaw = FMath::FInterpTo(currentYaw, targetYaw, delta, doorOpeningSpeed);
@@ -79,7 +66,12 @@ void UOpenDoor::openDoor(float delta)
 
 void UOpenDoor::closeDoor(float delta)
 {
-	// UE_LOG(LogTemp, Warning, TEXT("%s"), *GetOwner()->GetActorTransform().ToString());
+	if(doorOpen)
+	{
+		playAudio();
+		doorClosed = true;
+		doorOpen = false;
+	}
 
 	// Relative rotation
 	currentYaw = FMath::FInterpTo(currentYaw, initialYaw, delta, doorClosingSpeed);
@@ -105,3 +97,39 @@ float UOpenDoor::getTotalMassOverlapping() const
 	return totalMass;
 }
 
+void UOpenDoor::playAudio()
+{
+	audioComponent->Play();
+}
+
+void UOpenDoor::controlPressurePlate(float delta)
+{
+	if(pressurePlate->IsOverlappingActor(actorThatOpens) ||  getTotalMassOverlapping() > massToOpenDoor)
+	{
+		openDoor(delta);
+		doorLastOpenedTime = GetWorld()->GetTimeSeconds();
+	}else
+	{
+		float actualTime = GetWorld()->GetTimeSeconds();
+		if (actualTime - doorLastOpenedTime >= doorClosingDelay)
+		{
+			closeDoor(delta);
+		}
+	}
+}
+
+void UOpenDoor::checkAudioComponent() const
+{
+	if(!audioComponent)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No audioComponent found for %s"), *GetOwner()->GetName());
+	}
+}
+
+void UOpenDoor::checkPressurePlate() const
+{
+	if(!pressurePlate)
+	{
+		UE_LOG(LogTemp, Error, TEXT("The actor %s has the OpenDoor component on it, but has no pressure plate set."), *GetOwner()->GetName());
+	}
+}
