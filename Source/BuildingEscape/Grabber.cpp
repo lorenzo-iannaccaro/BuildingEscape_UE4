@@ -33,6 +33,12 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if(!physicsHandle)
+	{
+		UE_LOG(LogTemp, Error, TEXT("physicsHandle not set."));
+		return;
+	}
+
 	// if the physics handle has an object attached to it
 	if(physicsHandle->GrabbedComponent)
 	{
@@ -75,10 +81,18 @@ void UGrabber::grab()
 
 	// get linetraceend
 	FVector lineTraceEnd = getPlayerReach();
+
+	AActor* actorHit = hitResult.GetActor(); 
 	
 	// if hit something with physics, grab it
-	if(hitResult.GetActor())
+	if(actorHit)
 	{
+		if(!physicsHandle)
+		{
+			UE_LOG(LogTemp, Error, TEXT("physicsHandle not set."));
+			return;
+		}
+
 		UPrimitiveComponent* componentToGrab = hitResult.GetComponent();
 		physicsHandle->GrabComponentAtLocation(componentToGrab, NAME_None, lineTraceEnd);
 	}
@@ -89,6 +103,12 @@ void UGrabber::release()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grab button released."));
 
+	if(!physicsHandle)
+	{
+		UE_LOG(LogTemp, Error, TEXT("physicsHandle not set."));
+		return;
+	}
+	
 	// eventually release a grabbed object
 	if(physicsHandle->GetGrabbedComponent())
 	{

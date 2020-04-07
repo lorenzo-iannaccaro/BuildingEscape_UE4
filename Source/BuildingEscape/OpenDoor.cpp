@@ -32,7 +32,7 @@ void UOpenDoor::BeginPlay()
 
 	if(!pressurePlate)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("The actor %s has the OpenDoor component on it, but has no pressure plate set."), *GetOwner()->GetName());
+		UE_LOG(LogTemp, Error, TEXT("The actor %s has the OpenDoor component on it, but has no pressure plate set."), *GetOwner()->GetName());
 	}
 
 	actorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
@@ -45,17 +45,23 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if(pressurePlate && (pressurePlate->IsOverlappingActor(actorThatOpens) ||  getTotalMassOverlapping() > massToOpenDoor) ){
+	if(!pressurePlate)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Pressure plate not set."));
+		return;
+	}
+
+	if(pressurePlate->IsOverlappingActor(actorThatOpens) ||  getTotalMassOverlapping() > massToOpenDoor)
+	{
 		openDoor(DeltaTime);
 		doorLastOpenedTime = GetWorld()->GetTimeSeconds();
-	}else{
-
+	}else
+	{
 		float actualTime = GetWorld()->GetTimeSeconds();
 		if (actualTime - doorLastOpenedTime >= doorClosingDelay)
 		{
 			closeDoor(DeltaTime);
 		}
-
 	}
 
 }

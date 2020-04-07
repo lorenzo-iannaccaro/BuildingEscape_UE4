@@ -47,9 +47,9 @@ private:
 	float targetYaw = -90.f;
 
 	UPROPERTY(EditAnywhere)
-	ATriggerVolume* pressurePlate;
+	ATriggerVolume* pressurePlate = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	AActor* actorThatOpens;
+	AActor* actorThatOpens = nullptr;
 		
 };
