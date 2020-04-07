@@ -24,15 +24,21 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	float reach = 100.f;
+
+	UPROPERTY(EditAnywhere)
+	float reach = 250.f;
+
 	UPhysicsHandleComponent* physicsHandle = nullptr;
 	UInputComponent* inputComponent = nullptr;
+	FVector playerViewPointLocation;
+	FRotator playerViewPointRotation;
 
-	
 	void grab();
 	void release();
 	void findPhysicsHandle();
 	void setupInputController();
-	FHitResult getFirstPhysicsInRange() const;
+	void updatePlayerViewpoint();
+	FVector getPlayerReach();
+	FHitResult getFirstPhysicsInRange();
 		
 };
